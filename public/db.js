@@ -1,10 +1,12 @@
 //create offline code here
-
 let db;
 // create a new db request for a "budget" database.
 
 request.onupgradeneeded = function(event) {
   // create object store called "pending" and set autoIncrement to true
+  const db = event.target.results;
+  const budgetPending = db.createObjectStore('budget', {autoIncrement: true});
+  budgetPending.createIndex('pendingIndex', 'pending')
 };
 
 request.onsuccess = function(event) {
