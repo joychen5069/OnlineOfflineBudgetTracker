@@ -3,7 +3,7 @@ let db;
 // create a new db request for a "budget" database.
 const request = indexedDB.open('budget', 1);
 
-request.onupgradeneeded = function (event) {
+request.onupgradeneeded = event => {
     const db = event.target.results;
 
     // create object store called "pending" and set autoIncrement to true
@@ -11,7 +11,7 @@ request.onupgradeneeded = function (event) {
     //   budgetPending.createIndex('pendingIndex', 'pending')
 };
 
-request.onsuccess = function (event) {
+request.onsuccess = event => {
     db = event.target.result;
 
     //if user is online, check for pending
@@ -20,12 +20,12 @@ request.onsuccess = function (event) {
     }
 };
 
-request.onerror = function (error) {
+request.onerror = error => {
     // log error here if it fails
     console.log('Error: ', error)
 };
 
-function saveRecord(record) {
+saveRecord = record => {
     // create a transaction on the pending db with readwrite access
     const transaction = db.transaction(['pending'], 'readwrite');
     // access your pending object store
@@ -35,7 +35,7 @@ function saveRecord(record) {
 }
 
 //create function to check database for pending transactions
-function checkDatabase() {
+checkDatabase = () => {
     // open a transaction on your pending db
     const transaction = db.transaction(['pending', 'readwrite'])
     // access your pending object store
@@ -43,7 +43,7 @@ function checkDatabase() {
     // get all pending records
     const getAll = budgetPending.getAll();
 
-    getAll.onsuccess = function () {
+    getAll.onsuccess = () => {
         if (getAll.result.length > 0) {
             fetch("/api/transaction/bulk", {
                 method: "POST",
