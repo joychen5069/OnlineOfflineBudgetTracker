@@ -27,9 +27,9 @@ request.onerror = function (error) {
 
 function saveRecord(record) {
     // create a transaction on the pending db with readwrite access
-    const transaction = db.transaction(['pending'], 'readwrite');
+    let transaction = db.transaction(['pending'], 'readwrite');
     // access your pending object store
-    const budgetPending = transaction.objectStore('pending')
+    let budgetPending = transaction.objectStore('pending')
     // add record to your store with add method.
     budgetPending.add(record)
 }
@@ -37,9 +37,9 @@ function saveRecord(record) {
 //create function to check database for pending transactions
 function checkDatabase() {
     // open a transaction on your pending db
-    const transaction = db.transaction(['pending', 'readwrite'])
+    let transaction = db.transaction(['pending'], 'readwrite')
     // access your pending object store
-    const budgetPending = transaction.objectStore('pending');
+    let budgetPending = transaction.objectStore('pending');
     // get all pending records
     const getAll = budgetPending.getAll();
 
@@ -56,9 +56,9 @@ function checkDatabase() {
                 .then(response => response.json())
                 .then(() => {
                     // if successful, open a transaction on your pending db
-                    const transaction = db.transaction(['budget'], 'readwrite');
+                    const transaction = db.transaction(['pending'], 'readwrite');
                     // access your pending object store
-                    const budgetPending = transaction.objectStore('budget');
+                    const budgetPending = transaction.objectStore('pending');
                     // clear all items in your store
                     budgetPending.clear();
                 });
