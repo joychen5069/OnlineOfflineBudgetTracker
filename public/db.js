@@ -1,29 +1,29 @@
 //create offline code here
 let db;
 
-// create a new db request for a "budget" database.
+// create request to store pending
 const request = window.indexedDB.open('budget', 1);
 
-request.onupgradeneeded = function (event) {
+request.onupgradeneeded = event => {
   // create object store called "pending" and set autoIncrement to true
   const db = event.target.result;
   const budgetPending = db.createObjectStore('budget', { autoIncrement: true });
   budgetPending.createIndex('pendingIndex', 'pending');
 };
 
-request.onsuccess = function (event) {
+request.onsuccess = event => {
   db = event.target.result;
   if (navigator.onLine) {
     checkDatabase();
   }
 };
 
-request.onerror = function (error) {
+request.onerror = error => {
   // log error here
   console.log('ERROR:', error);
 };
 
-function saveRecord(record) {
+saveRecord = record => {
   // create a transaction on the pending db with readwrite access
   const transaction = db.transaction(['budget'], 'readwrite');
   // access your pending object store
@@ -32,19 +32,17 @@ function saveRecord(record) {
   budgetPending.add(record);
 };
 
-function checkDatabase() {
+checkDatabase = () => {
   // open a transaction on your pending db
   const transaction = db.transaction(['budget'], 'readwrite');
+  // access your pending object store
   const budgetPending = transaction.objectStore('budget');
-  // const pendingIndex = budgetPending.index("pendingIndex")
-  // console.log("checkDatabase -> pendingIndex", pendingIndex)
+ 
   const getRequest = budgetPending.getAll();
-  // getRequest.onsuccess = () => {
-  //   console.log(getRequest.result);
-  // };
+ 
   // access your pending object store
   // get all records from store and set to a variable
-  getRequest.onsuccess = function () {
+  getRequest.onsuccess = () => {
     if (getRequest.result.length > 0) {
       fetch('/api/transaction/bulk', {
         method: 'POST',
